@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Submissions</title>
+  <style>
+    body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #c1bcbc;
+            padding: 20px;
+            border-radius: 10px;
+          }
+
+          h1, h2 {
+            text-align: center;
+            color: #333;
+          }
+
+          form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          }
+
+          label {
+            font-weight: bold;
+          }
+
+          input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+          }
+
+          button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          }
+
+          button:hover {
+            background-color: #326e35;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          }
+
+          th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+          }
+
+          th {
+            background-color: #4CAF50;
+            color: white;
+          }
+
+          tr:hover {
+            background-color: #f1f1f1;
+          }
+  </style>
+</head>
+<body>
+  <h1>Hi, I'm running a test for storing input into my database :></h1>
+
+  <form id="userForm">
+    <label>What's your name? (don't have to use your real name)</label>
+    <input type="text" name="name" required>
+    <label>What is/are your favourite word(s)?</label>
+    <input type="text" name="fav_word" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2>All Submissions</h2>
+  <table id="userTable">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Favourite word(s)</th>
+    </tr>
+  </table>
+
+  <script>
+    async function fetchUsers() {
+      const response = await fetch("/users");
+      const users = await response.json();
+
+      const table = document.getElementById("userTable");
+      table.innerHTML = `<tr><th>ID</th><th>Name</th><th>Favourite word(s)</th></tr>` +
+        users.map(u => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.fav_word}</td></tr>`).join("");
+    }
+
+    document.getElementById("userForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      await fetch("/submit", {
+        method: "POST",
+        body: new URLSearchParams(formData)
+      });
+      e.target.reset();
+      fetchUsers(); // refresh table
+    });
+
+    fetchUsers(); // initial load
+  </script>
+</body>
+</html>
