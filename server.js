@@ -3,18 +3,22 @@ const express = require("express")
 const bodyParser = require("body-parser");
 const path = require("path");
 const app = express()
+require("dotenv").config();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")));
 
 const pool = new Pool({
-    host: "localhost",
-    user: "postgres",
-    port: 5432,
-    password: "Haveyouevertriedthis1?",
-    database: "autoIncrementTest"
-})
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    port: process.env.DB_PORT,
+    password: process.env.DB.PASSWORD,
+    database: process.env.DB_NAME,
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false } // needed on Render
+});
+
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
